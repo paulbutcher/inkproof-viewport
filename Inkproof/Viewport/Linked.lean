@@ -11,8 +11,8 @@ namespace Inkproof.Viewport
 /-- `n` views that share one x axis, each with its own y axis. The shared axis is held once, so
 a change through any view is seen by all. -/
 structure Linked (α : Type u) (n : Nat) where
-  x : Scale.Shared (Axis α)
-  y : Fin n → Axis α
+  x : Scale.Shared (Interval α)
+  y : Fin n → Interval α
 
 namespace Linked
 

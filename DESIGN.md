@@ -2,7 +2,7 @@
 
 ## State
 
-An `Axis` is a start and a span in data units; its screen length, zoom limits, home view and key steps are an `Axis.Config`. Its transform to the screen is a Scale `Linear`, so the cursor is `Linear.inv.map` and inverts it by Scale's theorems. A `View` is an x and a y `Axis`.
+An `Interval` is a start and a span in data units; its screen length, zoom limits, home view and key steps are an `Interval.Config`. Its transform to the screen is a Scale `Linear`, so the cursor is `Linear.inv.map` and inverts it by Scale's theorems. A `View` is an x and a y `Interval`.
 
 ## Step
 

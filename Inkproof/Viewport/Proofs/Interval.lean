@@ -2,12 +2,12 @@
 Copyright (c) 2026 Paul Butcher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import Inkproof.Viewport.Axis
+import Inkproof.Viewport.Interval
 import Inkproof.Scale.Proofs
 
 universe u
 
-namespace Inkproof.Viewport.Axis
+namespace Inkproof.Viewport.Interval
 
 open Lean.Grind
 
@@ -15,27 +15,27 @@ variable {α : Type u} [Field α] [LE α] [LT α] [Std.LawfulOrderLT α] [Std.Is
   [OrderedRing α]
 
 /-- The data value at a screen position is the start plus its fraction of the span. -/
-theorem toData_eq (c : Config α) (a : Axis α) (p : α) :
+theorem toData_eq (c : Config α) (a : Interval α) (p : α) :
     toData c a p = a.start + p * a.span / c.length := by
   simp only [toData, toLinear, Scale.Linear.inv, Scale.Linear.map]; grind
 
 /-- The screen position of a data value is its fraction of the span along the screen length. -/
-theorem toScreen_eq (c : Config α) (a : Axis α) (d : α) :
+theorem toScreen_eq (c : Config α) (a : Interval α) (d : α) :
     toScreen c a d = (d - a.start) * c.length / a.span := by
   simp only [toScreen, toLinear, Scale.Linear.map]; grind
 
 /-- PROOF-10: the data under the cursor is mapped back to the cursor's screen position. -/
-theorem toScreen_toData (c : Config α) (a : Axis α) (hs : a.span ≠ 0) (hl : c.length ≠ 0)
+theorem toScreen_toData (c : Config α) (a : Interval α) (hs : a.span ≠ 0) (hl : c.length ≠ 0)
     (p : α) : toScreen c a (toData c a p) = p := by
   rw [toScreen_eq, toData_eq]; grind
 
 /-- PROOF-10: the screen position of a data value is mapped back to that value. -/
-theorem toData_toScreen (c : Config α) (a : Axis α) (hs : a.span ≠ 0) (hl : c.length ≠ 0)
+theorem toData_toScreen (c : Config α) (a : Interval α) (hs : a.span ≠ 0) (hl : c.length ≠ 0)
     (d : α) : toData c a (toScreen c a d) = d := by
   rw [toScreen_eq, toData_eq]; grind
 
 /-- PROOF-9: zoom about a point keeps the data under that point fixed, for every factor. -/
-theorem toData_zoomAt [DecidableLT α] (c : Config α) (a : Axis α) (p f : α) :
+theorem toData_zoomAt [DecidableLT α] (c : Config α) (a : Interval α) (p f : α) :
     toData c (zoomAt c a p f) p = toData c a p := by
   unfold zoomAt
   split
@@ -62,7 +62,7 @@ section Limits
 variable [DecidableLT α]
 
 /-- PROOF-9: zoom keeps the span within the limits, whatever the factor. -/
-theorem zoomAt_within {c : Config α} (hc : c.minSpan ≤ c.maxSpan) {a : Axis α} (ha : Within c a)
+theorem zoomAt_within {c : Config α} (hc : c.minSpan ≤ c.maxSpan) {a : Interval α} (ha : Within c a)
     (p f : α) : Within c (zoomAt c a p f) := by
   unfold zoomAt
   split
@@ -72,7 +72,7 @@ theorem zoomAt_within {c : Config α} (hc : c.minSpan ≤ c.maxSpan) {a : Axis �
 /-- PROOF-9: zooming in by a factor and out by the same factor at the same point restores the view,
 provided the zoomed-in span is within the limits, so that no limit intervenes. A factor that is not
 positive changes nothing, so it restores trivially. -/
-theorem zoomAt_zoomAt_inv {c : Config α} {a : Axis α} (p f : α)
+theorem zoomAt_zoomAt_inv {c : Config α} {a : Interval α} (p f : α)
     (hf : 0 < f → Within c ⟨a.start, a.span / f⟩) (ha : Within c a) :
     zoomAt c (zoomAt c a p f) p (1 / f) = a := by
   by_cases h : 0 < f
@@ -92,17 +92,17 @@ theorem zoomAt_zoomAt_inv {c : Config α} {a : Axis α} (p f : α)
 
 omit [LT α] [Std.LawfulOrderLT α] [Std.IsLinearOrder α] [OrderedRing α] [DecidableLT α] in
 /-- Panning moves the start and keeps the span, so the limits still hold. -/
-theorem pan_within {c : Config α} {a : Axis α} (ha : Within c a) (d : α) : Within c (pan a d) :=
+theorem pan_within {c : Config α} {a : Interval α} (ha : Within c a) (d : α) : Within c (pan a d) :=
   ha
 
 omit [DecidableLT α] in
 /-- Panning by a distance and back restores the view. -/
-theorem pan_pan_neg (a : Axis α) (d : α) : pan (pan a d) (-d) = a := by
+theorem pan_pan_neg (a : Interval α) (d : α) : pan (pan a d) (-d) = a := by
   cases a; simp only [pan]; grind
 
 omit [LT α] [Std.LawfulOrderLT α] [Std.IsLinearOrder α] [OrderedRing α] [DecidableLT α] in
 /-- Dragging keeps the span. -/
-theorem drag_within {c : Config α} {a : Axis α} (ha : Within c a) (dp : α) :
+theorem drag_within {c : Config α} {a : Interval α} (ha : Within c a) (dp : α) :
     Within c (drag c a dp) := ha
 
 /-- Fitting an interval gives a span within the limits. -/
@@ -110,7 +110,7 @@ theorem fit_within {c : Config α} (hc : c.minSpan ≤ c.maxSpan) (d₀ d₁ : �
     Within c (fit c d₀ d₁) := clamp_within hc _
 
 /-- Box zoom gives a span within the limits. -/
-theorem box_within {c : Config α} (hc : c.minSpan ≤ c.maxSpan) (a : Axis α) (p₀ p₁ : α) :
+theorem box_within {c : Config α} (hc : c.minSpan ≤ c.maxSpan) (a : Interval α) (p₀ p₁ : α) :
     Within c (box c a p₀ p₁) := fit_within hc _ _
 
 end Limits
@@ -121,11 +121,11 @@ variable [DecidableLT α]
 
 omit [LE α] [LT α] [Std.LawfulOrderLT α] [Std.IsLinearOrder α] [OrderedRing α] [DecidableLT α] in
 /-- Panning adds the distance to the start and keeps the span. -/
-theorem pan_eq (a : Axis α) (d : α) : pan a d = ⟨a.start + d, a.span⟩ := rfl
+theorem pan_eq (a : Interval α) (d : α) : pan a d = ⟨a.start + d, a.span⟩ := rfl
 
 omit [LE α] [LT α] [Std.LawfulOrderLT α] [Std.IsLinearOrder α] [OrderedRing α] [DecidableLT α] in
 /-- Dragging by `dp` screen units moves the start by minus `dp` scaled to data units. -/
-theorem drag_eq (c : Config α) (a : Axis α) (dp : α) :
+theorem drag_eq (c : Config α) (a : Interval α) (dp : α) :
     drag c a dp = ⟨a.start - dp * a.span / c.length, a.span⟩ := by
   cases a; simp only [drag, pan]; congr 1; grind
 
@@ -139,9 +139,9 @@ theorem fit_of_le {c : Config α} {d₀ d₁ : α} (h : d₀ ≤ d₁) (hw : Wit
 
 omit [LE α] [Std.LawfulOrderLT α] [Std.IsLinearOrder α] [OrderedRing α] in
 /-- Box zoom fits the data under its two corners. -/
-theorem box_eq (c : Config α) (a : Axis α) (p₀ p₁ : α) :
+theorem box_eq (c : Config α) (a : Interval α) (p₀ p₁ : α) :
     box c a p₀ p₁ = fit c (toData c a p₀) (toData c a p₁) := rfl
 
 end Results
 
-end Inkproof.Viewport.Axis
+end Inkproof.Viewport.Interval

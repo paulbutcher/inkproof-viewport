@@ -13,10 +13,10 @@ namespace InkproofViewportTest.ViewTests
 open InkproofTools.Test
 open Inkproof.Viewport
 
-def axisConfig : Axis.Config Float :=
+def intervalConfig : Interval.Config Float :=
   { length := 800, minSpan := 0.5, maxSpan := 1000, home := ⟨0, 100⟩, keyZoom := 1.25, keyPan := 0.1 }
 
-def config : ViewConfig Float := ⟨axisConfig, axisConfig⟩
+def config : ViewConfig Float := ⟨intervalConfig, intervalConfig⟩
 
 def near (a b : Float) : Bool := (a - b).abs ≤ 1e-6 * (1 + a.abs + b.abs)
 
@@ -46,8 +46,8 @@ def limitsHold : TestCase := .mk "Zoom limits hold after any sequence of inputs"
     let (seed, g) := g.below 100000
     ((n, seed), g)) fun (n, seed) => do
     let v := run (sequence n seed)
-    check (axisConfig.minSpan ≤ v.x.span && v.x.span ≤ axisConfig.maxSpan) "x span out of limits"
-    check (axisConfig.minSpan ≤ v.y.span && v.y.span ≤ axisConfig.maxSpan) "y span out of limits"
+    check (intervalConfig.minSpan ≤ v.x.span && v.x.span ≤ intervalConfig.maxSpan) "x span out of limits"
+    check (intervalConfig.minSpan ≤ v.y.span && v.y.span ≤ intervalConfig.maxSpan) "y span out of limits"
 
 def zoomKeepsPoint : TestCase := .mk "A wheel zoom keeps the data under the pointer" <|
   forAll 300 (fun g =>

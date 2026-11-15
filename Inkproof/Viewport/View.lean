@@ -2,7 +2,7 @@
 Copyright (c) 2026 Paul Butcher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import Inkproof.Viewport.Axis
+import Inkproof.Viewport.Interval
 
 universe u
 
@@ -10,14 +10,14 @@ namespace Inkproof.Viewport
 
 /-- The visible ranges of a two-axis view. -/
 structure View (α : Type u) where
-  x : Axis α
-  y : Axis α
+  x : Interval α
+  y : Interval α
   deriving Repr, BEq, ReflBEq, LawfulBEq
 
 /-- The configuration of each axis. -/
 structure ViewConfig (α : Type u) where
-  x : Axis.Config α
-  y : Axis.Config α
+  x : Interval.Config α
+  y : Interval.Config α
   deriving Repr
 
 /-- Both axes satisfy their configuration's validity. -/
@@ -69,7 +69,7 @@ def step (c : ViewConfig α) (v : View α) : Input α → View α
   | .key .up => ⟨v.x, v.y.pan (-(c.y.keyPan * v.y.span))⟩
   | .key .down => ⟨v.x, v.y.pan (c.y.keyPan * v.y.span)⟩
   | .box x₀ y₀ x₁ y₁ => ⟨v.x.box c.x x₀ x₁, v.y.box c.y y₀ y₁⟩
-  | .set xs xe ys ye => ⟨Axis.fit c.x xs xe, Axis.fit c.y ys ye⟩
+  | .set xs xe ys ye => ⟨Interval.fit c.x xs xe, Interval.fit c.y ys ye⟩
   | .reset => ⟨c.x.home, c.y.home⟩
 
 /-- The data coordinates under a screen position, for a cursor. -/
