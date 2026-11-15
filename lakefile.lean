@@ -12,9 +12,11 @@ package «inkproof-viewport» where
     ⟨`warningAsError, true⟩
   ]
 
+require «inkproof-scale» from git "https://github.com/paulbutcher/inkproof-scale" @ "v0.6.0"
+
 @[default_target]
 lean_lib InkproofViewport where
-  roots := #[`Inkproof.Viewport]
+  roots := #[`Inkproof.Viewport, `Inkproof.Viewport.Proofs]
 
 @[test_driver]
 script tests do
