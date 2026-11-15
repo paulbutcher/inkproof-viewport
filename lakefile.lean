@@ -13,6 +13,7 @@ package «inkproof-viewport» where
   ]
 
 require «inkproof-scale» from git "https://github.com/paulbutcher/inkproof-scale" @ "v0.6.0"
+require «inkproof-float» from git "https://github.com/paulbutcher/inkproof-float" @ "v0.5.0"
 
 @[default_target]
 lean_lib InkproofViewport where

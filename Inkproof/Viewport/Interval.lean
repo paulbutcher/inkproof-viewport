@@ -3,6 +3,7 @@ Copyright (c) 2026 Paul Butcher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import Inkproof.Scale
+import Inkproof.Float.RatLemmas
 
 universe u
 
@@ -39,10 +40,6 @@ are total without this, but the theorems about them need it. -/
 def Config.Valid [OfNat α 0] [LE α] [LT α] (c : Config α) : Prop :=
   0 < c.length ∧ 0 < c.minSpan ∧ c.minSpan ≤ c.maxSpan ∧ Within c c.home
 
-/-- `x` held to the interval from `lo` to `hi`. -/
-def clamp [LT α] [DecidableLT α] (lo hi x : α) : α :=
-  if x < lo then lo else if hi < x then hi else x
-
 /-- The transform from data to screen; its inverse is the cursor's. -/
 def toLinear [Add α] [OfNat α 0] (c : Config α) (a : Interval α) : Scale.Linear α :=
   ⟨a.start, a.start + a.span, 0, c.length⟩
@@ -56,7 +53,7 @@ def toData [Add α] [Sub α] [Mul α] [Div α] [OfNat α 0] (c : Config α) (a :
   (toLinear c a).inv.map p
 
 /-- A span held to the zoom limits. -/
-def clampSpan [LT α] [DecidableLT α] (c : Config α) (s : α) : α := clamp c.minSpan c.maxSpan s
+def clampSpan [LT α] [DecidableLT α] (c : Config α) (s : α) : α := Float.clamp c.minSpan c.maxSpan s
 
 /-- Zoom in by factor `f` about the screen position `p`, so the data under `p` stays under it.
 A factor that is not positive, which includes NaN, leaves the view alone. -/

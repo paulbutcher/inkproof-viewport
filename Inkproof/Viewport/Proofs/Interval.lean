@@ -48,12 +48,12 @@ variable [DecidableLT α]
 
 /-- The clamp lies within its bounds when they are in order. -/
 theorem clamp_within {lo hi : α} (h : lo ≤ hi) (x : α) :
-    lo ≤ clamp lo hi x ∧ clamp lo hi x ≤ hi := by
-  unfold clamp; grind
+    lo ≤ Float.clamp lo hi x ∧ Float.clamp lo hi x ≤ hi := by
+  unfold Float.clamp; grind
 
 /-- The clamp leaves a value already within its bounds alone. -/
-theorem clamp_of_within {lo hi x : α} (h : lo ≤ x ∧ x ≤ hi) : clamp lo hi x = x := by
-  unfold clamp; grind
+theorem clamp_of_within {lo hi x : α} (h : lo ≤ x ∧ x ≤ hi) : Float.clamp lo hi x = x := by
+  unfold Float.clamp; grind
 
 end Clamp
 
