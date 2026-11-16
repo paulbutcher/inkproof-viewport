@@ -66,7 +66,7 @@ def linkedAgree : TestCase := .mk "Views linked on x agree after an input to eit
     let (n, g) := g.below 20
     let (seed, g) := g.below 100000
     ((n, seed), g)) fun (n, seed) => do
-    let g0 : Linked Float 2 := ⟨⟨⟨0, 100⟩⟩, fun _ => ⟨0, 100⟩⟩
+    let g0 : Linked Float 2 := { x := ⟨⟨0, 100⟩⟩, y := fun _ => ⟨0, 100⟩ }
     let mut g1 := g0
     let mut j := 0
     for i in sequence n seed do

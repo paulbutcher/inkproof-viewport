@@ -12,24 +12,58 @@ namespace Inkproof.Viewport.Linked
 variable {α : Type u} {n : Nat}
 
 /-- PROOF-10: linked views draw with the identical x transform in every state. -/
-theorem xTransform_eq [Add α] [OfNat α 0] (c : ViewConfig α) (g : Linked α n) (i j : Fin n) :
-    xTransform c g i = xTransform c g j := rfl
+theorem xTransform_eq [Add α] [OfNat α 0] (c : ViewConfig α) (g : Linked α n) {i j : Fin n}
+    (hi : g.isLinked i = true) (hj : g.isLinked j = true) : xTransform c g i = xTransform c g j := by
+  simp [isLinked, Option.isNone_iff_eq_none] at hi hj
+  simp [xTransform, view, hi, hj]
 
-/-- Every linked view shows the shared x axis. -/
-theorem view_x (g : Linked α n) (i : Fin n) : (g.view i).x = g.x.scale := rfl
+/-- A linked view shows the shared x axis. -/
+theorem view_x (g : Linked α n) {i : Fin n} (h : g.isLinked i = true) : (g.view i).x = g.x.scale := by
+  simp [isLinked, Option.isNone_iff_eq_none] at h
+  simp [view, h]
+
+/-- Unlinking leaves what every view shows unchanged. -/
+theorem view_unlink (g : Linked α n) (i j : Fin n) : (g.unlink i).view j = g.view j := by
+  by_cases h : j = i <;> simp [unlink, view, h]
+
+/-- Relinking a view makes it show the shared x axis. -/
+theorem view_relink (g : Linked α n) (i : Fin n) : ((g.relink i).view i).x = g.x.scale := by
+  simp [relink, view]
+
+/-- Relinking leaves the other views alone. -/
+theorem view_relink_of_ne (g : Linked α n) {i j : Fin n} (h : j ≠ i) :
+    (g.relink i).view j = g.view j := by
+  simp [relink, view, h]
+
+theorem isLinked_iff (g : Linked α n) (i : Fin n) : g.isLinked i = true ↔ g.own i = none := by
+  simp [isLinked, Option.isNone_iff_eq_none]
+
+theorem isLinked_unlink (g : Linked α n) (i : Fin n) : (g.unlink i).isLinked i = false := by
+  simp [unlink, isLinked]
+
+theorem isLinked_relink (g : Linked α n) (i : Fin n) : (g.relink i).isLinked i = true := by
+  simp [relink, isLinked]
 
 section Step
 
 variable [Add α] [Sub α] [Mul α] [Div α] [Neg α] [OfNat α 0] [OfNat α 1] [LT α] [DecidableLT α]
   (c : ViewConfig α) (g : Linked α n) (i : Fin n) (inp : Input α)
 
-/-- VIEW-3: after an input to one view, every view shows the x axis that view arrived at. -/
-theorem view_x_step (j : Fin n) :
-    ((g.step c i inp).view j).x = (View.step c (g.view i) inp).x := rfl
+/-- After an input to a linked view, every linked view shows the x axis that view arrived at. -/
+theorem view_x_step (hi : g.isLinked i = true) {j : Fin n} (hj : g.isLinked j = true) :
+    ((g.step c i inp).view j).x = (View.step c (g.view i) inp).x := by
+  simp [isLinked, Option.isNone_iff_eq_none] at hi hj
+  simp [step, view, isLinked, hi, hj]
+  rfl
+
+/-- An input to an unlinked view leaves the shared axis alone. -/
+theorem x_step_unlinked (hi : g.isLinked i = false) : (g.step c i inp).x = g.x := by
+  simp [step, hi]
 
 /-- The view the input went to shows exactly what the single-view step gives. -/
 theorem view_step_self : (g.step c i inp).view i = View.step c (g.view i) inp := by
-  simp [step, view]; rfl
+  unfold step view isLinked
+  cases h : g.own i <;> simp [h] <;> rfl
 
 /-- An input to one view leaves the y axis of every other view alone. -/
 theorem view_y_step_of_ne {j : Fin n} (h : j ≠ i) : ((g.step c i inp).view j).y = (g.view j).y := by

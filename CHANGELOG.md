@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.0
+
+A view in `Linked` can be unlinked from the shared x axis and relinked to it; breaking, as `Linked` gains a field and the link theorems now name the linked views.
+
 ## v0.3.0
 
 Uses `Inkproof.Float.clamp` in place of `Interval.clamp`, which is removed; breaking.
