@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.1
+
+Tests run under @lasm/cli 0.8.0.
+
 ## v0.4.0
 
 A view in `Linked` can be unlinked from the shared x axis and relinked to it; breaking, as `Linked` gains a field and the link theorems now name the linked views.
