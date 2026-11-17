@@ -85,6 +85,12 @@ def box [Add α] [Sub α] [Mul α] [Div α] [OfNat α 0] [OfNat α 1] [LT α] [D
     (c : Config α) (a : Interval α) (p₀ p₁ : α) : Interval α :=
   fit c (toData c a p₀) (toData c a p₁)
 
+/-- The sample indices `[lo, hi)` of a recording of `n` samples that the interval touches, clamped
+to be non-empty and within the recording. Sample `i` occupies `[i, i + 1)`. -/
+def indexRange (a : Interval Rat) (n : Nat) : Nat × Nat :=
+  let lo := min (n - 1) a.start.floor.toNat
+  (lo, min n (max (lo + 1) (a.start + a.span).ceil.toNat))
+
 end Interval
 
 end Inkproof.Viewport

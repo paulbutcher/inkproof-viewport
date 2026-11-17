@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.0
+
+`Interval.indexRange` gives the non-empty range of sample indices an interval touches in a recording of `n` samples.
+
 ## v0.4.1
 
 Tests run under @lasm/cli 0.8.0.

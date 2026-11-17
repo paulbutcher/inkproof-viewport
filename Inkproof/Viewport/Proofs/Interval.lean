@@ -142,6 +142,25 @@ omit [LE α] [Std.LawfulOrderLT α] [Std.IsLinearOrder α] [OrderedRing α] in
 theorem box_eq (c : Config α) (a : Interval α) (p₀ p₁ : α) :
     box c a p₀ p₁ = fit c (toData c a p₀) (toData c a p₁) := rfl
 
+/-- The range is non-empty and within the recording. -/
+theorem indexRange_lt_le (a : Interval Rat) (n : Nat) (hn : 0 < n) :
+    (indexRange a n).1 < (indexRange a n).2 ∧ (indexRange a n).2 ≤ n := by
+  simp only [indexRange]; omega
+
+/-- The range covers every sample the interval touches, provided the interval ends within the recording. -/
+theorem indexRange_covers (a : Interval Rat) (n : Nat)
+    (h1 : a.start + a.span ≤ n) (i : Nat) (hi : (i : Rat) < a.start + a.span)
+    (hi' : a.start < (i : Rat) + 1) :
+    (indexRange a n).1 ≤ i ∧ i < (indexRange a n).2 := by
+  have hc : (i : Int) < (a.start + a.span).ceil := by
+    rw [Rat.lt_ceil_iff, Rat.intCast_natCast]; exact hi
+  have hf : a.start.floor < (i : Int) + 1 := by
+    rw [Rat.floor_lt_iff, Rat.intCast_add, Rat.intCast_natCast]; exact hi'
+  have hn : i < n := by
+    have : (i : Rat) < n := by grind
+    exact_mod_cast this
+  simp only [indexRange]; omega
+
 end Results
 
 end Inkproof.Viewport.Interval
