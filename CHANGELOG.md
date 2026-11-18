@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.1
+
+Tests use `Float.near` from inkproof-float v0.6.0.
+
 ## v0.5.0
 
 `Interval.indexRange` gives the non-empty range of sample indices an interval touches in a recording of `n` samples.
