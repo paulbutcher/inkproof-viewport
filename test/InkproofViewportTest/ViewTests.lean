@@ -3,6 +3,7 @@ Copyright (c) 2026 Paul Butcher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import Inkproof.Viewport
+import Inkproof.Float
 import InkproofTools.Test.Harness
 
 /-! Float views driven by inputs: the proved properties hold up to rounding, and the pieces
@@ -12,13 +13,12 @@ namespace InkproofViewportTest.ViewTests
 
 open InkproofTools.Test
 open Inkproof.Viewport
+open Inkproof.Float
 
 def intervalConfig : Interval.Config Float :=
   { length := 800, minSpan := 0.5, maxSpan := 1000, home := ⟨0, 100⟩, keyZoom := 1.25, keyPan := 0.1 }
 
 def config : ViewConfig Float := ⟨intervalConfig, intervalConfig⟩
-
-def near (a b : Float) : Bool := (a - b).abs ≤ 1e-6 * (1 + a.abs + b.abs)
 
 /-- Inputs of every kind from a stream of numbers, including ones outside any limits. -/
 def inputOf (k : Nat) (a b c d : Float) : Input Float :=
@@ -58,7 +58,7 @@ def zoomKeepsPoint : TestCase := .mk "A wheel zoom keeps the data under the poin
     ((n, seed, p, f), g)) fun (n, seed, p, f) => do
     let v := run (sequence n seed)
     let w := View.step config v (.wheel p.toFloat p.toFloat (f.toFloat / 100 + 0.1))
-    check (near (View.cursor config v p.toFloat 0).1 (View.cursor config w p.toFloat 0).1)
+    check (Float.near (View.cursor config v p.toFloat 0).1 (View.cursor config w p.toFloat 0).1)
       "data under the pointer moved"
 
 def linkedAgree : TestCase := .mk "Views linked on x agree after an input to either" <|
