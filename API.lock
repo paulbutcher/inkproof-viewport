@@ -1,3 +1,18 @@
+def Inkproof.Viewport.Gesture.box : Inkproof.Viewport.ViewConfig Float → Inkproof.Viewport.Px → Inkproof.Viewport.Px → Option (Inkproof.Viewport.Input Float)
+theorem Inkproof.Viewport.Gesture.box_eq : ∀ (c : Inkproof.Viewport.ViewConfig Float) (a b : Inkproof.Viewport.Px), Inkproof.Viewport.Gesture.box c a b = if (Decidable.decide ((b.fst - a.fst).abs < Inkproof.Viewport.Gesture.minBox) || Decidable.decide ((b.snd - a.snd).abs < Inkproof.Viewport.Gesture.minBox)) = Bool.true then Option.none else Option.some (Inkproof.Viewport.Input.box (Inkproof.Viewport.Gesture.toView c a).fst (Inkproof.Viewport.Gesture.toView c a).snd (Inkproof.Viewport.Gesture.toView c b).fst (Inkproof.Viewport.Gesture.toView c b).snd)
+theorem Inkproof.Viewport.Gesture.box_none : ∀ (c : Inkproof.Viewport.ViewConfig Float) (a b : Inkproof.Viewport.Px), (b.fst - a.fst).abs < Inkproof.Viewport.Gesture.minBox → Inkproof.Viewport.Gesture.box c a b = Option.none
+theorem Inkproof.Viewport.Gesture.box_some : ∀ (c : Inkproof.Viewport.ViewConfig Float) (a b : Inkproof.Viewport.Px), ¬(Decidable.decide ((b.fst - a.fst).abs < Inkproof.Viewport.Gesture.minBox) || Decidable.decide ((b.snd - a.snd).abs < Inkproof.Viewport.Gesture.minBox)) = Bool.true → Inkproof.Viewport.Gesture.box c a b = Option.some (Inkproof.Viewport.Input.box (Inkproof.Viewport.Gesture.toView c a).fst (Inkproof.Viewport.Gesture.toView c a).snd (Inkproof.Viewport.Gesture.toView c b).fst (Inkproof.Viewport.Gesture.toView c b).snd)
+def Inkproof.Viewport.Gesture.inside : Inkproof.Viewport.ViewConfig Float → Inkproof.Viewport.Px → Bool
+theorem Inkproof.Viewport.Gesture.inside_eq : ∀ (c : Inkproof.Viewport.ViewConfig Float) (p : Inkproof.Viewport.Px), Inkproof.Viewport.Gesture.inside c p = (Decidable.decide (0 ≤ p.fst) && Decidable.decide (p.fst ≤ c.x.length) && Decidable.decide (0 ≤ p.snd) && Decidable.decide (p.snd ≤ c.y.length))
+def Inkproof.Viewport.Gesture.minBox : Float
+def Inkproof.Viewport.Gesture.pinch : Inkproof.Viewport.Px → Inkproof.Viewport.Px → Inkproof.Viewport.Px → Inkproof.Viewport.Px → List (Inkproof.Viewport.Input Float)
+theorem Inkproof.Viewport.Gesture.pinch_eq : ∀ (o₁ o₂ n₁ n₂ : Inkproof.Viewport.Px), Inkproof.Viewport.Gesture.pinch o₁ o₂ n₁ n₂ = [Inkproof.Viewport.Input.pinch ((o₁.fst + o₂.fst) / 2) ((o₁.snd + o₂.snd) / 2) (Inkproof.Viewport.Gesture.spread (o₂.fst - o₁.fst).abs (n₂.fst - n₁.fst).abs) (Inkproof.Viewport.Gesture.spread (o₂.snd - o₁.snd).abs (n₂.snd - n₁.snd).abs), Inkproof.Viewport.Input.drag ((n₁.fst + n₂.fst) / 2 - (o₁.fst + o₂.fst) / 2) ((n₁.snd + n₂.snd) / 2 - (o₁.snd + o₂.snd) / 2)]
+def Inkproof.Viewport.Gesture.spread : Float → Float → Float
+theorem Inkproof.Viewport.Gesture.spread_eq : ∀ (old new : Float), Inkproof.Viewport.Gesture.spread old new = if (Decidable.decide (old < 1) || Decidable.decide (new < 1)) = Bool.true then 1 else new / old
+def Inkproof.Viewport.Gesture.toView : Inkproof.Viewport.ViewConfig Float → Inkproof.Viewport.Px → Inkproof.Viewport.Px
+theorem Inkproof.Viewport.Gesture.toView_eq : ∀ (c : Inkproof.Viewport.ViewConfig Float) (p : Inkproof.Viewport.Px), Inkproof.Viewport.Gesture.toView c p = (p.fst, c.y.length - p.snd)
+def Inkproof.Viewport.Gesture.wheelFactor : Float → Float
+theorem Inkproof.Viewport.Gesture.wheelFactor_eq : ∀ (delta : Float), Inkproof.Viewport.Gesture.wheelFactor delta = (-delta / 500).exp
 inductive Inkproof.Viewport.Input : Type u → Type u
 constructor Inkproof.Viewport.Input.box : {α : Type u} → α → α → α → α → Inkproof.Viewport.Input α
 constructor Inkproof.Viewport.Input.drag : {α : Type u} → α → α → Inkproof.Viewport.Input α
@@ -84,6 +99,7 @@ def Inkproof.Viewport.Linked.xTransform : {α : Type u} → {n : Nat} → [Add �
 theorem Inkproof.Viewport.Linked.xTransform_eq : ∀ {α : Type u} {n : Nat} [inst : Add α] [inst_1 : OfNat α 0] (c : Inkproof.Viewport.ViewConfig α) (g : Inkproof.Viewport.Linked α n) {i j : Fin n}, g.isLinked i = Bool.true → g.isLinked j = Bool.true → Inkproof.Viewport.Linked.xTransform c g i = Inkproof.Viewport.Linked.xTransform c g j
 theorem Inkproof.Viewport.Linked.x_step_unlinked : ∀ {α : Type u} {n : Nat} [inst : Add α] [inst_1 : Sub α] [inst_2 : Mul α] [inst_3 : Div α] [inst_4 : Neg α] [inst_5 : OfNat α 0] [inst_6 : OfNat α 1] [inst_7 : LT α] [inst_8 : DecidableLT α] (c : Inkproof.Viewport.ViewConfig α) (g : Inkproof.Viewport.Linked α n) (i : Fin n) (inp : Inkproof.Viewport.Input α), g.isLinked i = Bool.false → (Inkproof.Viewport.Linked.step c g i inp).x = g.x
 field Inkproof.Viewport.Linked.y : {α : Type u} → {n : Nat} → Inkproof.Viewport.Linked α n → Fin n → Inkproof.Viewport.Interval α
+def Inkproof.Viewport.Px : Type
 structure Inkproof.Viewport.View : Type u → Type u
 inductive Inkproof.Viewport.View.Reachable : {α : Type u} → Inkproof.Viewport.ViewConfig α → [Add α] → [Sub α] → [Mul α] → [Div α] → [Neg α] → [OfNat α 0] → [OfNat α 1] → [inst : LT α] → [DecidableLT α] → Inkproof.Viewport.View α → Prop
 constructor Inkproof.Viewport.View.Reachable.below.home : ∀ {α : Type u} {c : Inkproof.Viewport.ViewConfig α} [inst : Add α] [inst_1 : Sub α] [inst_2 : Mul α] [inst_3 : Div α] [inst_4 : Neg α] [inst_5 : OfNat α 0] [inst_6 : OfNat α 1] [inst_7 : LT α] [inst_8 : DecidableLT α] {motive : (a : Inkproof.Viewport.View α) → Inkproof.Viewport.View.Reachable c a → Prop}, Inkproof.Viewport.View.Reachable.below ⋯

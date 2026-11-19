@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.0
+
+Gesture conversion to inputs: `Gesture.wheelFactor`, `spread`, `pinch`, `box`, `toView`, `inside`.
+
 ## v0.5.1
 
 Tests use `Float.near` from inkproof-float v0.6.0.

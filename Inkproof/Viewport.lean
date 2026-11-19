@@ -6,5 +6,6 @@ import Inkproof.Viewport.Interval
 import Inkproof.Viewport.View
 import Inkproof.Viewport.Event
 import Inkproof.Viewport.Linked
+import Inkproof.Viewport.Gesture
 
 /-! # Inkproof.Viewport -/
