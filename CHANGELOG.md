@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.0
+
+`Linked.followArray`: the follow half of `Linked.stepArray`, for a host that has already stepped the origin view.
+
 ## v0.8.0
 
 `Linked.stepArray`: a linked step over an array of views whose size is known at run time.

@@ -71,6 +71,27 @@ theorem view_y_step_of_ne {j : Fin n} (h : j ≠ i) : ((g.step c i inp).view j).
 
 end Step
 
+section FollowArray
+
+/-- Following keeps the number of views. -/
+theorem size_followArray (vs : Array (View α)) (i : Nat) (v : View α) :
+    (followArray vs i v).size = vs.size := by
+  unfold followArray
+  split <;> simp
+
+/-- Following gives view `i` the view `v`. -/
+theorem getElem_followArray_self (vs : Array (View α)) (i : Nat) (v : View α) (h : i < vs.size) :
+    (followArray vs i v)[i]'(by simpa [size_followArray] using h) = v := by
+  simp [followArray, h]
+
+/-- Following gives every other view the x range of `v` and keeps its y range. -/
+theorem getElem_followArray_of_ne (vs : Array (View α)) (i : Nat) (v : View α) (j : Nat)
+    (hi : i < vs.size) (hj : j < vs.size) (hne : j ≠ i) :
+    (followArray vs i v)[j]'(by simpa [size_followArray] using hj) = { vs[j] with x := v.x } := by
+  simp [followArray, hi, hne]
+
+end FollowArray
+
 section StepArray
 
 variable [Add α] [Sub α] [Mul α] [Div α] [Neg α] [OfNat α 0] [OfNat α 1] [LT α] [DecidableLT α]
@@ -79,7 +100,12 @@ variable [Add α] [Sub α] [Mul α] [Div α] [Neg α] [OfNat α 0] [OfNat α 1] 
 /-- A step keeps the number of views. -/
 theorem size_stepArray : (stepArray c vs i inp).size = vs.size := by
   unfold stepArray
-  split <;> simp
+  split <;> simp [size_followArray]
+
+/-- Stepping view `i` is following the view it reaches. -/
+theorem stepArray_eq_followArray (h : i < vs.size) :
+    stepArray c vs i inp = followArray vs i (View.step c vs[i] inp) := by
+  simp [stepArray, h]
 
 /-- With every view linked, the array step shows what `Linked.step` shows. -/
 theorem stepArray_eq_step (g : Linked α n) (hg : ∀ j, g.isLinked j = true) (i : Fin n) :
@@ -89,7 +115,8 @@ theorem stepArray_eq_step (g : Linked α n) (hg : ∀ j, g.isLinked j = true) (i
   · simp [size_stepArray]
   · intro j hj1 hj2
     have hj : j < n := by simpa [size_stepArray] using hj1
-    simp only [stepArray, hi, Array.getElem_mapIdx, Array.getElem_ofFn]
+    simp only [stepArray, hi, followArray, Array.size_ofFn, i.isLt, ite_true, Array.getElem_mapIdx,
+      Array.getElem_ofFn]
     by_cases h : j = i
     · subst h
       simp [view_step_self]
