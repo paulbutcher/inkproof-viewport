@@ -48,6 +48,17 @@ def step [Add α] [Sub α] [Mul α] [Div α] [Neg α] [OfNat α 0] [OfNat α 1] 
     y := fun j => if j = i then v.y else g.y j
     own := fun j => if j = i && !g.isLinked i then some v.x else g.own j }
 
+/-- Apply an input to view `i` of a group whose size is known only at run time, every view of which
+follows the shared x axis: all views take the x range the view reached, and only view `i` takes its
+y range. An index out of range leaves the group unchanged. -/
+def stepArray [Add α] [Sub α] [Mul α] [Div α] [Neg α] [OfNat α 0] [OfNat α 1] [LT α] [DecidableLT α]
+    (c : ViewConfig α) (vs : Array (View α)) (i : Nat) (inp : Input α) : Array (View α) :=
+  match vs[i]? with
+  | none => vs
+  | some v =>
+    let v' := View.step c v inp
+    vs.mapIdx fun j w => if j = i then v' else { w with x := v'.x }
+
 end Linked
 
 end Inkproof.Viewport

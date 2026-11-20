@@ -12,6 +12,7 @@ A view is the visible range of each axis, as a pure state machine: `View.step` t
 - Box zoom over x, y, both or the longer side of a drag, refusing a drag shorter than a chosen minimum along the covered axes: `Gesture.boxOver`, `Gesture.Axes`.
 - Find which samples of a recording a visible range touches: `Interval.indexRange`.
 - Link views so they share an axis, with per-view unlink and relink: `Linked`, `Linked.step`, `Linked.view`, `Linked.unlink`, `Linked.relink`.
+- Link a run-time-sized array of views, such as charts on a page: `Linked.stepArray`.
 - Forward view changes to a host or another user, apply received ones, and prove a view stays within its limits: `View.stepEvent`, `ViewChange`, `View.receive`, `View.Within`, `View.Reachable`, `View.step_within`.
 
 ## Using it

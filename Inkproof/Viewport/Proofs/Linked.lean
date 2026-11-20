@@ -71,4 +71,35 @@ theorem view_y_step_of_ne {j : Fin n} (h : j ≠ i) : ((g.step c i inp).view j).
 
 end Step
 
+section StepArray
+
+variable [Add α] [Sub α] [Mul α] [Div α] [Neg α] [OfNat α 0] [OfNat α 1] [LT α] [DecidableLT α]
+  (c : ViewConfig α) (vs : Array (View α)) (i : Nat) (inp : Input α)
+
+/-- A step keeps the number of views. -/
+theorem size_stepArray : (stepArray c vs i inp).size = vs.size := by
+  unfold stepArray
+  split <;> simp
+
+/-- With every view linked, the array step shows what `Linked.step` shows. -/
+theorem stepArray_eq_step (g : Linked α n) (hg : ∀ j, g.isLinked j = true) (i : Fin n) :
+    stepArray c (Array.ofFn g.view) i inp = Array.ofFn (g.step c i inp).view := by
+  have hi : (Array.ofFn g.view)[(i : Nat)]? = some (g.view i) := by simp
+  apply Array.ext
+  · simp [size_stepArray]
+  · intro j hj1 hj2
+    have hj : j < n := by simpa [size_stepArray] using hj1
+    simp only [stepArray, hi, Array.getElem_mapIdx, Array.getElem_ofFn]
+    by_cases h : j = i
+    · subst h
+      simp [view_step_self]
+    · have h' : (⟨j, hj⟩ : Fin n) ≠ i := fun e => h (by simpa using congrArg Fin.val e)
+      have hx := view_x_step c g i inp (hg i) (j := ⟨j, hj⟩) (hg _)
+      have hy := view_y_step_of_ne c g i inp h'
+      simp only [h, ite_false]
+      cases hv : (g.step c i inp).view ⟨j, hj⟩
+      simp_all
+
+end StepArray
+
 end Inkproof.Viewport.Linked

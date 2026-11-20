@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.8.0
+
+`Linked.stepArray`: a linked step over an array of views whose size is known at run time.
+
 ## v0.7.0
 
 Box zoom over chosen axes with a chosen minimum drag: `Gesture.boxOver`, `Gesture.Axes`.
