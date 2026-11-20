@@ -69,6 +69,77 @@ theorem box_some (c : ViewConfig Float) (a b : Px) (h : ¬((b.1 - a.1).abs < min
     box c a b = some (.box (toView c a).1 (toView c a).2 (toView c b).1 (toView c b).2) := by
   simp [box, h]
 
+/-- The axes a box zoom covers; `auto` covers whichever side of the drag is longer, `x` on a tie. -/
+inductive Axes where
+  | x | y | both | auto
+
+/-- Whether a drag of `dx` by `dy` pixels covers the x axis and the y axis. -/
+def Axes.covers : Axes → Float → Float → Bool × Bool
+  | .x, _, _ => (true, false)
+  | .y, _, _ => (false, true)
+  | .both, _, _ => (true, true)
+  | .auto, dx, dy => (dy ≤ dx, dx < dy)
+
+theorem Axes.covers_x (dx dy : Float) : Axes.x.covers dx dy = (true, false) := rfl
+
+theorem Axes.covers_y (dx dy : Float) : Axes.y.covers dx dy = (false, true) := rfl
+
+theorem Axes.covers_both (dx dy : Float) : Axes.both.covers dx dy = (true, true) := rfl
+
+theorem Axes.covers_auto (dx dy : Float) : Axes.auto.covers dx dy = (decide (dy ≤ dx), decide (dx < dy)) := rfl
+
+/-- The box zoom for a drag between two positions over the given axes, refused if the drag is shorter than `minDrag` along a covered axis. An axis not covered is spanned by the whole plot, so it keeps its range. -/
+def boxOver (c : ViewConfig Float) (axes : Axes) (minDrag : Float) (a b : Px) : Option (Input Float) :=
+  let dx := (b.1 - a.1).abs
+  let dy := (b.2 - a.2).abs
+  let cov := axes.covers dx dy
+  if (cov.1 && dx < minDrag) || (cov.2 && dy < minDrag) then none
+  else
+    let a := toView c a
+    let b := toView c b
+    some (.box (if cov.1 then a.1 else 0) (if cov.2 then a.2 else 0)
+      (if cov.1 then b.1 else c.x.length) (if cov.2 then b.2 else c.y.length))
+
+theorem boxOver_eq (c : ViewConfig Float) (axes : Axes) (minDrag : Float) (a b : Px) :
+    boxOver c axes minDrag a b =
+      if ((axes.covers (b.1 - a.1).abs (b.2 - a.2).abs).1 && (b.1 - a.1).abs < minDrag) ||
+          ((axes.covers (b.1 - a.1).abs (b.2 - a.2).abs).2 && (b.2 - a.2).abs < minDrag) then none
+      else
+        some (.box (if (axes.covers (b.1 - a.1).abs (b.2 - a.2).abs).1 then (toView c a).1 else 0)
+          (if (axes.covers (b.1 - a.1).abs (b.2 - a.2).abs).2 then (toView c a).2 else 0)
+          (if (axes.covers (b.1 - a.1).abs (b.2 - a.2).abs).1 then (toView c b).1 else c.x.length)
+          (if (axes.covers (b.1 - a.1).abs (b.2 - a.2).abs).2 then (toView c b).2 else c.y.length)) := rfl
+
+theorem box_eq_boxOver (c : ViewConfig Float) (a b : Px) : box c a b = boxOver c .both minBox a b := by
+  simp [box, boxOver, Axes.covers]
+
+theorem boxOver_none_x (c : ViewConfig Float) (axes : Axes) (minDrag : Float) (a b : Px)
+    (h : (axes.covers (b.1 - a.1).abs (b.2 - a.2).abs).1 = true) (hd : (b.1 - a.1).abs < minDrag) :
+    boxOver c axes minDrag a b = none := by
+  simp [boxOver, h, hd]
+
+theorem boxOver_none_y (c : ViewConfig Float) (axes : Axes) (minDrag : Float) (a b : Px)
+    (h : (axes.covers (b.1 - a.1).abs (b.2 - a.2).abs).2 = true) (hd : (b.2 - a.2).abs < minDrag) :
+    boxOver c axes minDrag a b = none := by
+  simp [boxOver, h, hd]
+
+/-- An axis not covered gets the whole plot's extent. -/
+theorem boxOver_uncovered_x (c : ViewConfig Float) (axes : Axes) (minDrag : Float) (a b : Px) (i : Input Float)
+    (hi : boxOver c axes minDrag a b = some i)
+    (h : (axes.covers (b.1 - a.1).abs (b.2 - a.2).abs).1 = false) :
+    ∃ y₀ y₁, i = .box 0 y₀ c.x.length y₁ := by
+  simp only [boxOver, h] at hi
+  split at hi <;> simp_all
+  subst hi; exact ⟨_, _, rfl⟩
+
+theorem boxOver_uncovered_y (c : ViewConfig Float) (axes : Axes) (minDrag : Float) (a b : Px) (i : Input Float)
+    (hi : boxOver c axes minDrag a b = some i)
+    (h : (axes.covers (b.1 - a.1).abs (b.2 - a.2).abs).2 = false) :
+    ∃ x₀ x₁, i = .box x₀ 0 x₁ c.y.length := by
+  simp only [boxOver, h] at hi
+  split at hi <;> simp_all
+  subst hi; exact ⟨_, _, rfl⟩
+
 end Gesture
 
 end Inkproof.Viewport

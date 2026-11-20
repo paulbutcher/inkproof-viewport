@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.0
+
+Box zoom over chosen axes with a chosen minimum drag: `Gesture.boxOver`, `Gesture.Axes`.
+
 ## v0.6.0
 
 Gesture conversion to inputs: `Gesture.wheelFactor`, `spread`, `pinch`, `box`, `toView`, `inside`.

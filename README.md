@@ -9,6 +9,7 @@ A view is the visible range of each axis, as a pure state machine: `View.step` t
 - Step a view (x and y ranges) by an input event, with zoom limits: `View.step`, `Input` (wheel, pinch, drag, key, box zoom, set, reset), `View.home`, `ViewConfig`; one axis alone: `Interval.zoomAt`, `Interval.pan`, `Interval.drag`, `Interval.box`, `Interval.fit`, `Interval.clampSpan`, `Interval.Config`.
 - Convert between data and screen positions, including the cursor's data position: `Interval.toScreen`, `Interval.toData`, `View.toScreen`, `View.cursor`, `Interval.toLinear`.
 - Convert pointer gestures to inputs over a `ViewConfig`: wheel delta to zoom factor, two-finger pinch to pinch and drag inputs, box drag to a box input, screen to view position, and whether a position is over the plot: `Gesture.wheelFactor`, `Gesture.spread`, `Gesture.pinch`, `Gesture.box`, `Gesture.toView`, `Gesture.inside`.
+- Box zoom over x, y, both or the longer side of a drag, refusing a drag shorter than a chosen minimum along the covered axes: `Gesture.boxOver`, `Gesture.Axes`.
 - Find which samples of a recording a visible range touches: `Interval.indexRange`.
 - Link views so they share an axis, with per-view unlink and relink: `Linked`, `Linked.step`, `Linked.view`, `Linked.unlink`, `Linked.relink`.
 - Forward view changes to a host or another user, apply received ones, and prove a view stays within its limits: `View.stepEvent`, `ViewChange`, `View.receive`, `View.Within`, `View.Reachable`, `View.step_within`.
