@@ -7,5 +7,6 @@ import Inkproof.Viewport.View
 import Inkproof.Viewport.Event
 import Inkproof.Viewport.Linked
 import Inkproof.Viewport.Gesture
+import Inkproof.Viewport.Selection
 
 /-! # Inkproof.Viewport -/

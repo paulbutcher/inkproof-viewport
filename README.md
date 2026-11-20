@@ -13,6 +13,7 @@ A view is the visible range of each axis, as a pure state machine: `View.step` t
 - Find which samples of a recording a visible range touches: `Interval.indexRange`.
 - Link views so they share an axis, with per-view unlink and relink: `Linked`, `Linked.step`, `Linked.view`, `Linked.unlink`, `Linked.relink`.
 - Link a run-time-sized array of views, such as charts on a page, from an input or from the origin view's new state: `Linked.stepArray`, `Linked.followArray`.
+- Keep a selected range over an interval and edit it by drag: hit test for edge, body or outside, then draw, move or resize, clamped and ordered, and convert to and from a view's range: `Selection.hit`, `Selection.press`, `Selection.Drag.at`, `Selection.Band`, `Selection.Config`, `Selection.ofInterval`, `Selection.Band.toInterval`.
 - Forward view changes to a host or another user, apply received ones, and prove a view stays within its limits: `View.stepEvent`, `ViewChange`, `View.receive`, `View.Within`, `View.Reachable`, `View.step_within`.
 
 ## Using it

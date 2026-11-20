@@ -6,3 +6,4 @@ import Inkproof.Viewport.Proofs.Interval
 import Inkproof.Viewport.Proofs.View
 import Inkproof.Viewport.Proofs.Event
 import Inkproof.Viewport.Proofs.Linked
+import Inkproof.Viewport.Proofs.Selection

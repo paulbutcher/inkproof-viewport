@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.0
+
+`Selection`: a range selection over an interval as a pure state machine, with a hit test, draw, move and resize by drag, and conversion to and from a view range.
+
 ## v0.9.0
 
 `Linked.followArray`: the follow half of `Linked.stepArray`, for a host that has already stepped the origin view.
