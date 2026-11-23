@@ -18,8 +18,8 @@ A view is the visible range of each axis, as a pure state machine: `View.step` t
 
 ## Using it
 
-Add to your `lakefile.lean`:
+Add to your `lakefile.lean`, replacing `vX.Y.Z` with the latest release tag listed in `CHANGELOG.md`:
 
 ```lean
-require «inkproof-viewport» from git "https://github.com/paulbutcher/inkproof-viewport" @ "v0.4.1"
+require «inkproof-viewport» from git "https://github.com/paulbutcher/inkproof-viewport" @ "vX.Y.Z"
 ```
