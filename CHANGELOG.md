@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.1
+
+The README's require example names no release version.
+
 ## v0.10.0
 
 `Selection`: a range selection over an interval as a pure state machine, with a hit test, draw, move and resize by drag, and conversion to and from a view range.
